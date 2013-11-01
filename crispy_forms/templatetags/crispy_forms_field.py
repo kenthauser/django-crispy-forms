@@ -1,7 +1,11 @@
+
+# once crispy requires django >= 1.5:
+# from django.utils import six
+# from six.moves import zip
 try:
-    from itertools import izip
+    from itertools import izip as zip
 except ImportError:
-    izip = zip
+    pass
 
 from django import forms
 from django import template
@@ -64,7 +68,7 @@ def css_class(field):
 def pairwise(iterable):
     "s -> (s0,s1), (s2,s3), (s4, s5), ..."
     a = iter(iterable)
-    return izip(a, a)
+    return zip(a, a)
 
 
 class CrispyFieldNode(template.Node):
@@ -93,39 +97,45 @@ class CrispyFieldNode(template.Node):
         widgets = getattr(field.field.widget, 'widgets', [field.field.widget])
 
         if isinstance(attrs, dict):
-            attrs = [attrs] * len(widgets)
+            from itertools import repeat
+            attrs = repeat(attrs)
 
         for widget, attr in zip(widgets, attrs):
             class_name = widget.__class__.__name__.lower()
             class_name = class_converter.get(class_name, class_name)
             css_class = widget.attrs.get('class', '')
-            if css_class:
-                if css_class.find(class_name) == -1:
-                    css_class += " %s" % class_name
-            else:
-                css_class = class_name
+
+            # unique the class names using `set`
+            css_class_set = set(class_name.split())
+            css_class_set.update(css_class.split())
 
             if (
                 TEMPLATE_PACK == 'bootstrap3'
                 and not is_checkbox(field)
                 and not is_file(field)
             ):
-                css_class += ' form-control'
+                css_class_set.add('form_control')
 
-            widget.attrs['class'] = css_class
 
             # HTML5 required attribute
             if html5_required and field.field.required and 'required' not in widget.attrs:
+                # XXX: comment why this is not `not is_radioselect(field)`
                 if field.field.widget.__class__.__name__ is not 'RadioSelect':
                     widget.attrs['required'] = 'required'
 
             for attribute_name, attribute in attr.items():
                 attribute_name = template.Variable(attribute_name).resolve(context)
+                attribute = template.Variable(attribute).resolve(context)
 
-                if attribute_name in widget.attrs:
-                    widget.attrs[attribute_name] += " " + template.Variable(attribute).resolve(context)
+                # special case 'class' because it's a special case
+                if attribute_name == 'class':
+                    css_class_set.update(attribute.split())
+                elif attribute_name in widget.attrs:
+                    widget.attrs[attribute_name] += " " + attribute
                 else:
-                    widget.attrs[attribute_name] = template.Variable(attribute).resolve(context)
+                    widget.attrs[attribute_name] = attribute
+            # add uniqued 'class' attributes
+            widget.attrs['class'] = ' '.join(css_class_set)
 
         return field
 
