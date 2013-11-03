@@ -365,15 +365,17 @@ class FormHelper(DynamicLayoutHandler):
             items['attrs']['action'] = self.form_action.strip()
         if self.form_id:
             items['attrs']['id'] = self.form_id.strip()
+
+        # compute CSS class
         if self.form_class:
-            # uni_form TEMPLATE PACK has a uniForm class by default
-            if template_pack == 'uni_form':
-                items['attrs']['class'] = "uniForm %s" % self.form_class.strip()
-            else:
-                items['attrs']['class'] = self.form_class.strip()
+            css_class = self.form_class.strip()
         else:
-            if template_pack == 'uni_form':
-                items['attrs']['class'] = self.attrs.get('class', '') + " uniForm"
+            css_class = self.attrs.get('class', '').strip()
+        if template_pack == 'uni_form':
+            # uni_form TEMPLATE PACK has a uniForm class by default
+            css_class = css_class + ' uniForm' if css_class else 'uniForm'
+        if css_class:
+            items['attrs']['class'] = css_class
 
         items['flat_attrs'] = flatatt(items['attrs'])
 
