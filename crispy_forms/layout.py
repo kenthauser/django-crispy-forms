@@ -445,13 +445,12 @@ class MultiWidgetField(Field):
 
 class Inline(object):
     """
-    Layout object. It can contain pure HTML and it has access to the whole
-    context of the page where the form is being rendered.
+    Layout object. Allows a Crispy form or formset to be rendered as a field of
+    another crispy form. An `Inline` object can be rendered anywhere a field is allowed.
 
-    Examples::
+    Example::
 
-        HTML("{% if saved %}Data saved{% endif %}")
-        HTML('<input type="hidden" name="{{ step_field }}" value="{{ step0 }}" />')
+        Fieldset('Render a sub-formset', Inline(subformset))
     """
 
     def __init__(self, inline, helper=None, template_pack=None):
