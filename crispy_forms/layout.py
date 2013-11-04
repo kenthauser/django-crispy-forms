@@ -441,3 +441,28 @@ class MultiWidgetField(Field):
         self.fields = list(args)
         self.attrs = kwargs.pop('attrs', {})
         self.template = kwargs.pop('template', self.template)
+
+
+class Inline(object):
+    """
+    Layout object. Allows a Crispy form or formset to be rendered as a field of
+    another crispy form. An `Inline` object can be rendered anywhere a field is allowed.
+
+    Example::
+
+        Fieldset('Render a sub-formset', Inline(subformset))
+    """
+
+    def __init__(self, inline, helper=None, template_pack=None):
+        self.inline = inline
+        self.helper = helper
+        self.template_pack = template_pack
+
+    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
+        from crispy_forms.templatetags.crispy_forms_tags import InlineFormNode
+
+        kwargs = {}
+        if self.template_pack:
+            kwargs['template_pack'] = self.template_pack
+
+        return InlineFormNode(self.inline, self.helper, **kwargs).render(context)
