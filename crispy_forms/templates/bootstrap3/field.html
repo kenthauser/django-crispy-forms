@@ -5,9 +5,8 @@
 {% else %}
 	<{% if tag %}{{ tag }}{% else %}div{% endif %} id="div_{{ field.auto_id }}" class="form-group{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
 		{% if field.label and form_show_labels %}
-			<label for="{{ field.id_for_label }}" class="{% if field|is_checkbox %}checkbox{% else %}{{ label_class }}{% endif %}{% if field.field.required %} requiredField{% endif %}">
-				{{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
-			</label>
+			<label for="{{ field.id_for_label }}" {% if label_class or field.field.required or field|is_checkbox %}
+                class="{% if field|is_checkbox %}checkbox{% if label_class %} {{ label_class}}{% endif %} {% elif label_class %}{{ label_class}} {% if field.field.required %} requiredField{% endif %} {% else %}requiredField{% endif %}"{% elif label_class or field.field.required %}{{ label_class }}{% endif %}{% if field.field.required %} requiredField{% endif %}"> {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %} </label>
 		{% endif %}
 
         {% if field|is_checkboxselectmultiple %}
@@ -16,13 +15,11 @@
             {% include 'bootstrap3/layout/radioselect.html' %}
         {% else %}
             {% if field_class %}
-                <div class="{{ field_class }}">
-            {% endif %}
+                {% crispy_field field "class" field_class %}
+            {% else %}
                 {% crispy_field field %}
-                {% include 'bootstrap3/layout/help_text_and_errors.html' %}
-            {% if field_class %}
-                </div>
             {% endif %}
+            {% include 'bootstrap3/layout/help_text_and_errors.html' %}
         {% endif %}
 	</{% if tag %}{{ tag }}{% else %}div{% endif %}>
 {% endif %}

@@ -64,12 +64,12 @@ def css_class(field):
     """
     return field.field.widget.__class__.__name__.lower()
 
-
 def pairwise(iterable):
-    "s -> (s0,s1), (s2,s3), (s4, s5), ..."
-    a = iter(iterable)
-    return zip(a, a)
-
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    from itertools import tee
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 class CrispyFieldNode(template.Node):
     def __init__(self, field, attrs):

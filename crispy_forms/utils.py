@@ -81,7 +81,8 @@ def render_field(field, form, form_style, context, template=None, labelclass=Non
                 # We use attrs as a dictionary later, so here we make a copy
                 list_attrs = attrs
                 if isinstance(attrs, dict):
-                    list_attrs = [attrs] * len(widgets)
+                    from itertools import repeat
+                    list_attrs = repeat(attrs)
 
                 for index, (widget, attr) in enumerate(zip(widgets, list_attrs)):
                     if hasattr(field_instance.widget, 'widgets'):

@@ -126,7 +126,8 @@ class BasicNode(template.Node):
                 helper.render_hidden_fields = True
                 for form in actual_form:
                     node_context.update({'forloop': forloop})
-                    form.form_html = helper.render_layout(form, node_context, template_pack=self.template_pack)
+                    form_helper = getattr(form, 'helper', helper)
+                    form.form_html = form_helper.render_layout(form, node_context, template_pack=self.template_pack)
                     forloop.iterate()
 
         if is_formset:
@@ -188,6 +189,8 @@ class BasicNode(template.Node):
 
         return response_dict
 
+# XXX cache get_template for all functions
+get_template = memoize(get_template, {}, 1)
 
 def whole_uni_formset_template(template_pack=TEMPLATE_PACK):
     return get_template('%s/whole_uni_formset.html' % template_pack)

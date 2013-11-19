@@ -1,0 +1,41 @@
+CSS Notes:
+
+1. class Alert-Heading in bootstrap3/errors.html not in BS3
+
+CSS Found in BS3 directory:
+
+alert
+alert-danger
+alert-heading * BS2
+alert-block * BS2
+form-group
+checkbox
+asteriskField *
+has-error
+requiredField *
+ctrlHolder *
+errorField *
+inlineLabel *
+formHint *
+checkbox-{{inline_class}} : checkbox-inline
+control-label
+help-block
+input-group
+input-group-btn active
+active
+{{input-size}}
+form-actions * BS2
+sr-only
+input-group-addon active
+radio
+radio-{{inline_class}} : radio-inline
+tab-pane active
+nav nav-tabs
+tab-content panel-body
+error * BS2
+controls * : audio:not([controls])  BS2
+table
+table-striped
+table-condensed
+form-actions
+multiField
